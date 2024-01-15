@@ -4,7 +4,7 @@
   "description": "A winter project in backend",
   "main": "index.js",
   "scripts": {
-    "dev":"nodemon src/index.js"
+    "dev": "nodemon src/index.js"
   },
   "keywords": [
     "India"
@@ -12,6 +12,7 @@
   "author": "Aashish Jha",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "prettier": "^3.2.2"
   }
 }
