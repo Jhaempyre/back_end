@@ -1,5 +1,5 @@
 //const asyncHandler= ()=>{}
-const asyncHandler= (fn)=>{async (req,res,next)=>{
+/*const asyncHandler= (fn)=>{async (req,res,next)=>{
     try {
         await fn(re,res,next)
 
@@ -14,17 +14,15 @@ const asyncHandler= (fn)=>{async (req,res,next)=>{
 }}
 
 export{asyncHandler}
-
+*/
 //by promises 
-/*const asyncHandler = (requestHandler) => {
+const asyncHandler = (requestHandler) => {
     return (req, res, next) => {
-        Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err))
+        Promise.resolve(requestHandler(req, res, next))
+        .catch((err) => next(err))
     }
 }
 
-
 export { asyncHandler }
 
-
-*/ 
 
