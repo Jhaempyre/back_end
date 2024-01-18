@@ -11,5 +11,4 @@ console.log(`\n MongoDB connected !! DB host:${connectionInstance.connection.hos
 
     }
 }
-
 export default connectDB
