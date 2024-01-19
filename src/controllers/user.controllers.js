@@ -1,12 +1,12 @@
 import {asyncHandler} from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {uploadcloud} from "../utils/cloudnary.js";
+import {uploadOnCloudinary} from "../utils/cloudnary.js";
 import {user} from "../models/user.model.js";
 
-const registerUser = asyncHandler(async(req, res) => {
+const registerUser = asyncHandler( async(req, res) => {
    
-    const {fullname, username , password , email} = req.body
+    const { fullname, username , password , email } = req.body
 
     if (
         [fullname , username , password , email].some((field) => field?.trim()=== "")
@@ -22,36 +22,40 @@ const registerUser = asyncHandler(async(req, res) => {
 if(existeduser){
     throw new ApiError(409,"user exsisit")
 }
-console.log(req.files)
+//console.log(req.files)
 
-const avtarlocalpath = req.files?.avtar[0]?.path;
+//const avtarlocalpath = req.files?.avtar[0]?.path;
 //const coverlocalpath = req.files?.coverImage[0]?.path;
+let avtarlocalpath;
+if(req.files && Array.isArray(req.files.avtar) && req.files.avtar.length > 0){
+    avtarlocalpath = req.files.avtar[0].path
+}
+
 
 let coverlocalpath;
 if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
     coverlocalpath = req.files.coverImage[0].path
 }
 
-
-
-
 if (!avtarlocalpath){
     throw new ApiError(400,"dp de ")
 }
 
-const avtar = await uploadcloud(avtarlocalpath)
-const coverImage= await uploadcloud(coverlocalpath)
+const avtar = await uploadOnCloudinary(avtarlocalpath)
+const coverImage = await uploadOnCloudinary(coverlocalpath)
 if (!avtar){
-    throw new ApiError(400,"dp de ")
+    //throw new ApiError(400,"dp de ")
 }
 const newuser = await user.create({
     fullname,
-    avtar:avtar.url,
+    avtar:avtar?.url || "",
     coverImage: coverImage?.url || "",
     email,
     password,
     username : username.toLowerCase()
 })
+
+//console.log(avtar.url);
 
 const createdUser= await user.findById(newuser._id).select(
     "-password -refreshToken"

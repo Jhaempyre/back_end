@@ -26,8 +26,8 @@ const userSchema = new Schema(
             index:true
         },
         avtar:{
-            type:String, //cloudnary url
-            required:true,
+            type:String //cloudnary url
+            //required is made false
         },
         coverImage:{
             type:String,
