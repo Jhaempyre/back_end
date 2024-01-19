@@ -7,7 +7,7 @@ cloudinary.config({
   api_secret:process.env.LOUDINARY_API_SECRET
 });
 
-const uploadcloud= async(loacalFilePath)=>{
+const uploadcloud = async(loacalFilePath)=>{
     try {
         if (!loacalFilePath) return null
         //upload
@@ -17,6 +17,7 @@ const uploadcloud= async(loacalFilePath)=>{
         //file sucess
         console.log("file is uploadaed",
         response.url);
+        fs.unlinkSync(loacalFilePath)
     
         return response;
         

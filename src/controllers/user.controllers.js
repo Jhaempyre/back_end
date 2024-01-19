@@ -1,43 +1,50 @@
 import {asyncHandler} from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js";
-import {user} from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import {uploadcloud} from "../utils/cloudnary.js";
+import {user} from "../models/user.model.js";
+
 const registerUser = asyncHandler(async(req, res) => {
    
-    const {fullname, username , password , email}= req.body
-    console.log("email:",email);
-
-   // if (fullname ===""){
-       // throw new ApiError(400,"FULL NAAM CAAHIYE")
-
-    //}
+    const {fullname, username , password , email} = req.body
 
     if (
-        [fullname,username , password , email].some((feild) => feild?.trim()=== "")
+        [fullname , username , password , email].some((field) => field?.trim()=== "")
         ) {
             throw new ApiError(400,"ALL feild are required")
         }
-   const existeduser= user.findOne({
-        $or:[{username}, {email}]
-    })    
+
+   const existeduser = await user.findOne({
+    $or: [{username},{email}]
+
+   })
+
 if(existeduser){
     throw new ApiError(409,"user exsisit")
 }
+console.log(req.files)
 
-const avtarloaclpath = req.files?.avtar[0]?.path;
-const coverlocalpath = req.files?.coverImage[0]?.path;
+const avtarlocalpath = req.files?.avtar[0]?.path;
+//const coverlocalpath = req.files?.coverImage[0]?.path;
 
-if (!avtarloaclpath){
+let coverlocalpath;
+if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+    coverlocalpath = req.files.coverImage[0].path
+}
+
+
+
+
+if (!avtarlocalpath){
     throw new ApiError(400,"dp de ")
 }
 
-const avtar = await uploadcloud(avtarloaclpath)
+const avtar = await uploadcloud(avtarlocalpath)
 const coverImage= await uploadcloud(coverlocalpath)
 if (!avtar){
     throw new ApiError(400,"dp de ")
 }
-const user = await user.create({
+const newuser = await user.create({
     fullname,
     avtar:avtar.url,
     coverImage: coverImage?.url || "",
@@ -46,7 +53,7 @@ const user = await user.create({
     username : username.toLowerCase()
 })
 
-const createdUser= await user.findById(user._id).select(
+const createdUser= await user.findById(newuser._id).select(
     "-password -refreshToken"
 )
 
@@ -60,5 +67,7 @@ return res.status(201).json(
 
 })
 
-export  {registerUser}   
+export  {
+    registerUser
+}   
        

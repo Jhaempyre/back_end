@@ -7,13 +7,15 @@ const router = Router()
 
 //image bhej paayenge
 router.route("/register").post(upload.fields([
-    {name:"avtar",
-     maxCount:1
+    {
+        name:"avtar",
+        maxCount: 1
     },
 
-    {name:"coverimage",
-maxCount:1
-}
+    {
+        name:"coverImage",
+        maxCount: 1
+    }
 ]),
     registerUser)
 

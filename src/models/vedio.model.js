@@ -6,7 +6,7 @@ const vedioSchema = new Schema(
             type:String,
             required:true
         },
-        thubnail:{
+        thumbnail:{
             type:String,
             required:true
         },

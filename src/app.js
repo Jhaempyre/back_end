@@ -12,7 +12,7 @@ app.use(express.json({
 }))
 app.use(express.urlencoded({
     extended:true,
-    limit:"15kb"
+    limit:"16kb"
 }))
 app.use(express.static("public"))//public asset hae jaha 
 app.use(cookieParser())
