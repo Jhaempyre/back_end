@@ -30,26 +30,34 @@ let avtarlocalpath;
 if(req.files && Array.isArray(req.files.avtar) && req.files.avtar.length > 0){
     avtarlocalpath = req.files.avtar[0].path
 }
-
+console.log(avtarlocalpath)
 
 let coverlocalpath;
 if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
     coverlocalpath = req.files.coverImage[0].path
 }
+console.log(coverlocalpath)
 
 if (!avtarlocalpath){
     throw new ApiError(400,"dp de ")
 }
+if (!coverlocalpath){
+    throw new ApiError(400,"cdp de ")
+}
 
 const avtar = await uploadOnCloudinary(avtarlocalpath)
 const coverImage = await uploadOnCloudinary(coverlocalpath)
+
 if (!avtar){
     //throw new ApiError(400,"dp de ")
+}
+if(!coverImage){
+    //bhai chalja
 }
 const newuser = await user.create({
     fullname,
     avtar:avtar?.url || "",
-    coverImage: coverImage?.url || "",
+    coverImage:coverImage?.url || "",
     email,
     password,
     username : username.toLowerCase()
