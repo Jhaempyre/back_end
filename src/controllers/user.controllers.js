@@ -151,13 +151,33 @@ const logInUser = asyncHandler(async(req,res)=>{
 
 const logOutUser = asyncHandler(async(req,res)=>{
      // chek form miidle ware is user looged in 
-    // if user logged in then on chek make refrehtoken false 
-    //bring your cookies back 
+     await user.findByIdAndUpdate(
+        req.foundUser._id,
+        {
+            $unset:{
+                refreshToken : 1
+            }
+        }, 
+            {
+                new : true
+            }
+     )
+     const options = {
+        httpOnly: true,
+        secure: true
+    }
 
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged Out"))
 })
+
 
 export  {
     registerUser,
-    logInUser
+    logInUser,
+    logOutUser
 }   
        
