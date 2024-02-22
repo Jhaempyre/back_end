@@ -1,6 +1,7 @@
-import { ApiError } from "../utils/ApiError";
+import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { Jwt } from "jsonwebtoken";
+import pkg from 'jsonwebtoken';
+const { Jwt } = pkg;
 import { user } from "../models/user.model.js";
 
 
@@ -27,3 +28,5 @@ const authVerify = asyncHandler(async(req,res,next)=>{
 
    }
 }) 
+
+export { authVerify }
