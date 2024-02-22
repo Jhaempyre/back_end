@@ -1,32 +1,57 @@
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import pkg from 'jsonwebtoken';
-const { Jwt } = pkg;
+import jwt from 'jsonwebtoken'; 
 import { user } from "../models/user.model.js";
 
+// writing middlewares for suthentication and getting if user is logged in with the logic if user has access token we can decode it to get
+//user id and other information 
 
 const authVerify = asyncHandler(async(req,res,next)=>{
+
+   //seting up a try catch block 
+
    try {
-    const token = req.cookies?.accesToken || req.header("Authorization")?.replace("Bearer ","")
- 
+
+      //we are geeting accessToken from user and also ther bearer token form the user as send either in cookie or header 
+
+    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","")
+
+ // if token not find then we think it is unauthorized request 
+
     if(!token){
+
      throw new ApiError(400,"Unauthorised request")
+
     }
-     
+     // we are now decoding the token using our seckret key from which we have encrypted 
+
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-    const iser =await user.findById(decodedToken?._id).select("-password -refreshToken")
+
+    // we are storing the decoded token in iser and chekinf if there is id with the access token talking to the databse 
+
+    const foundUser = await user.findById(decodedToken?._id).select("-password -refreshToken")
  
-    if(!iser){
+    //if iser is null this simply means that the access token is invalid 
+    if(!foundUser){
+
+      //error regarding this
+
      throw new ApiError(400,"Invalid access token")
+
     }
- 
-    req.iser = iser
+    //giving user details in user  
+    req.foundUser = foundUser
+
     next()
+
    } catch (error) {
 
-    throw new ApiError(405, error?.message || "Invalid access token")    
+// invalid world you are trying to access
+
+    throw new ApiError(401, error?.message || "Invalid access token")    
 
    }
+   
 }) 
 
 export { authVerify }
