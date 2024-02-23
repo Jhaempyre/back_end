@@ -106,6 +106,9 @@ return res.status(201).json(
 // directly it is meant to be urnon method not as function but 
 //then i made an instance of user and worked with that and it worked all wher ei suggest keep the name
 // easy and diffrentiable so that clashes and confusion wont occur 
+
+//chek here "https://github.com/Automattic/mongoose/issues/5260"
+// also here  "https://chat.openai.com/share/8fdc7634-5a78-4e21-8d92-1a159fab7bf4"
 const logInUser = asyncHandler(async(req,res)=>{
     //get email id and password 
     
