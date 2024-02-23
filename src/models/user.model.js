@@ -54,9 +54,12 @@ userSchema.pre("save",async function(next){
     this.password= await bcrypt.hash(this.password,11)
     next()
 })
-userSchema.methods.isPasswordCorrect = async function(password){
-   return await bcrypt.compare(password,this.password)
+// In the User model
+userSchema.methods.isPasswordCorrect = async function(password){     
+     return await bcrypt.compare(password, this.password)
+ 
 }
+ 
 userSchema.methods.genrateAccessToken = function(){
     return jwt.sign({
         _id:this._id,
@@ -80,4 +83,7 @@ userSchema.methods.genrateRefreshToken = function()
 
 
 }
-export const user = mongoose.model("user",userSchema)    
+export const user = mongoose.model("user", userSchema)    
+//module.exports = mongoose.model(user, userSchema);
+
+//module.exports = user ;

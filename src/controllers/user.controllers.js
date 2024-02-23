@@ -3,15 +3,19 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import {uploadOnCloudinary} from "../utils/cloudnary.js";
 import {user} from "../models/user.model.js";
+import mongoose from "mongoose";
 
 const genrateAccessTokenAndRefreshToken = async(userId)=>{
    try {
      //finding user and gettinf it's id 
-     const User = user.findById(userId)
+     const User = await  user.findById(userId)
+     console.log(User);
      //genrate access token
      const accesToken = user.genrateAccessToken()
+     console,log(accesToken)
      // genrate refrseh token
      const refreshToken = user.genrateRefreshToken()
+     console,log(refreshToken)
      User.refreshToken = refreshToken
      User.save({validateBeforeSave: false })
 
@@ -101,7 +105,7 @@ return res.status(201).json(
 const logInUser = asyncHandler(async(req,res)=>{
     //get email id and password 
     
-    const {username, email, password } = req.body
+    const {username , password , email } = req.body
     //chek if they came or not 
 
     if (!(email || username )){
@@ -115,18 +119,19 @@ const logInUser = asyncHandler(async(req,res)=>{
     if (!User) {
         throw new ApiError(404, "User does not exist")
     }
+    console.log(User)
     // chek for password 
     const isPasswordValid = await user.isPasswordCorrect(password)
     // if invalid , result false 
-    if (!isPasswordValid){
-        throw new ApiError(405, "invalid credential")
+    if (!(isPasswordValid)){
+       throw new ApiError(405, "invalid credential")
     }
     //if valid make correct 
     //genrate access and refresh tokens 
 
-    const {accesToken, refreshToken} = genrateAccessTokenAndRefreshToken(User._id)
+    const {accessToken, refreshToken} = genrateAccessTokenAndRefreshToken(User._id)
 
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+    const loggedInUser = await user.findById(user._id).select("-password -refreshToken")
 
     // send  cookkie to the user form server 
 
