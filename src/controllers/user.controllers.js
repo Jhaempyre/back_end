@@ -9,13 +9,13 @@ const genrateAccessTokenAndRefreshToken = async(userId)=>{
    try {
      //finding user and gettinf it's id 
      const User = await  user.findById(userId)
-     console.log(User);
+     //console.log(User);
      //genrate access token
-     const accesToken = user.genrateAccessToken()
-     console,log(accesToken)
+     const accesToken = User.genrateAccessToken()
+     console.log(accesToken)
      // genrate refrseh token
-     const refreshToken = user.genrateRefreshToken()
-     console,log(refreshToken)
+     const refreshToken = User.genrateRefreshToken()
+     console.log(refreshToken)
      User.refreshToken = refreshToken
      User.save({validateBeforeSave: false })
 
@@ -23,7 +23,8 @@ const genrateAccessTokenAndRefreshToken = async(userId)=>{
  
  } 
     catch (error) {
-    throw  new ApiError(420,"you are not authorised ")
+    throw  new ApiError(420,"you are not authorised "
+    )
    }
 }  
 
@@ -101,7 +102,10 @@ return res.status(201).json(
 )
 
 })
-
+// the problem coming was user.ispassword correct is not function since i was using moongose given user
+// directly it is meant to be urnon method not as function but 
+//then i made an instance of user and worked with that and it worked all wher ei suggest keep the name
+// easy and diffrentiable so that clashes and confusion wont occur 
 const logInUser = asyncHandler(async(req,res)=>{
     //get email id and password 
     
@@ -119,10 +123,11 @@ const logInUser = asyncHandler(async(req,res)=>{
     if (!User) {
         throw new ApiError(404, "User does not exist")
     }
-    console.log(User)
+    //console.log(User)
     // chek for password 
-    const isPasswordValid = await user.isPasswordCorrect(password)
+    const isPasswordValid = await User.isPasswordCorrect(password)
     // if invalid , result false 
+    console.log("job validated")
     if (!(isPasswordValid)){
        throw new ApiError(405, "invalid credential")
     }
@@ -131,8 +136,8 @@ const logInUser = asyncHandler(async(req,res)=>{
 
     const {accessToken, refreshToken} = genrateAccessTokenAndRefreshToken(User._id)
 
-    const loggedInUser = await user.findById(user._id).select("-password -refreshToken")
-
+    const loggedInUser = await user.findById(User._id).select("-password -refreshToken")
+    console.log(loggedInUser)
     // send  cookkie to the user form server 
 
     const options = {
@@ -147,7 +152,7 @@ const logInUser = asyncHandler(async(req,res)=>{
     new ApiResponse(
         200, 
         {
-            user: loggedInUser, accessToken, refreshToken
+            User: loggedInUser, accessToken, refreshToken
         },
         "User logged In Successfully"
     )
