@@ -8,17 +8,17 @@ import mongoose from "mongoose";
 const genrateAccessTokenAndRefreshToken = async (userId) => {
     try {
         const User = await user.findById(userId);
-        const accesToken = User.genrateAccessToken();
-        console.log("accestoken")
-        console.log(accesToken); // Ensure this prints the access token
+        const accessToken = User.genrateAccessToken();
+        //console.log("accestoken")
+        //console.log(accesToken); // Ensure this prints the access token
         const refreshToken = User.genrateRefreshToken();
-        console.log("refreshtoken")
-        console.log(refreshToken); // Ensure this prints the refresh token
+        //console.log("refreshtoken")
+        //console.log(refreshToken); // Ensure this prints the refresh token
         User.refreshToken = refreshToken;
         User.save({ validateBeforeSave: false });
         console.log("avtar")
-        console.log(accesToken);
-        return { accesToken, refreshToken }; // Check spelling, should be "accessToken"
+        
+        return { accessToken, refreshToken }; // Check spelling, should be "accessToken"
     } catch (error) {
         throw new ApiError(420, "You are not authorised");
     }
