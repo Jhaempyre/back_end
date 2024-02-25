@@ -5,28 +5,25 @@ import {uploadOnCloudinary} from "../utils/cloudnary.js";
 import {user} from "../models/user.model.js";
 import mongoose from "mongoose";
 
-const genrateAccessTokenAndRefreshToken = async(userId)=>{
-   try {
-     //finding user and gettinf it's id 
-     const User = await  user.findById(userId)
-     //console.log(User);
-     //genrate access token
-     const accesToken = User.genrateAccessToken()
-     console.log(accesToken)
-     // genrate refrseh token
-     const refreshToken = User.genrateRefreshToken()
-     console.log(refreshToken)
-     User.refreshToken = refreshToken
-     User.save({validateBeforeSave: false })
+const genrateAccessTokenAndRefreshToken = async (userId) => {
+    try {
+        const User = await user.findById(userId);
+        const accesToken = User.genrateAccessToken();
+        console.log("accestoken")
+        console.log(accesToken); // Ensure this prints the access token
+        const refreshToken = User.genrateRefreshToken();
+        console.log("refreshtoken")
+        console.log(refreshToken); // Ensure this prints the refresh token
+        User.refreshToken = refreshToken;
+        User.save({ validateBeforeSave: false });
+        console.log("avtar")
+        console.log(accesToken);
+        return { accesToken, refreshToken }; // Check spelling, should be "accessToken"
+    } catch (error) {
+        throw new ApiError(420, "You are not authorised");
+    }
+};
 
-     return {accesToken, refreshToken}
- 
- } 
-    catch (error) {
-    throw  new ApiError(420,"you are not authorised "
-    )
-   }
-}  
 
 const registerUser = asyncHandler( async(req, res) => {
    
@@ -137,7 +134,7 @@ const logInUser = asyncHandler(async(req,res)=>{
     //if valid make correct 
     //genrate access and refresh tokens 
 
-    const {accessToken, refreshToken} = genrateAccessTokenAndRefreshToken(User._id)
+    const {accessToken, refreshToken} = await genrateAccessTokenAndRefreshToken(User._id)
 
     const loggedInUser = await user.findById(User._id).select("-password -refreshToken")
     console.log(loggedInUser)
