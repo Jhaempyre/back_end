@@ -198,7 +198,7 @@ const updateRefreshToken = asyncHandler(async(req,res)=>{
 
     const decodedRefresh = jwt.verify(cookieRefreshToken,process.env.REFRESH_TOKEN_SECRET)
     
-    const User = await user.findById(decodedToken?._id)
+    const User = await user.findById(decodedRefresh?._id)
     
     if (!User){
         throw new ApiError(402,"You are not authorised")
@@ -216,8 +216,8 @@ const updateRefreshToken = asyncHandler(async(req,res)=>{
     
     return res
     .status(200)
-    .cookie("accesToken",accessToken,options)
-    .cookie("refresToken",newRefreshToken,options)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",newRefreshToken,options)
     .json(
         new ApiResponse(
             200,{
@@ -232,6 +232,10 @@ const updateRefreshToken = asyncHandler(async(req,res)=>{
     }
 )
 
+const updatePassword = asyncHandler(async(req,res)=>{
+    //if user is ok:then get password from rew.body
+    //
+})
 export  {
     registerUser,
     logInUser,
