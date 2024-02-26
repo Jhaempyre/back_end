@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import {uploadOnCloudinary} from "../utils/cloudnary.js";
 import {user} from "../models/user.model.js";
 import mongoose from "mongoose";
+import { application } from "express";
 
 const genrateAccessTokenAndRefreshToken = async (userId) => {
     try {
@@ -184,10 +185,57 @@ const logOutUser = asyncHandler(async(req,res)=>{
     .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
+//updating refeshtoken so that user don't need to sign in again and again with password 
+//we will update refreshtoken 
+
+const updateRefreshToken = asyncHandler(async(req,res)=>{
+    //get refreshtoken from cookies aur header from bearer token 
+    const cookieRefreshToken = req.cookie.refreshToken || req.body.refreshToken
+
+    if(!cookieRefreshToken){
+        throw new ApiError(400,"You are not Uthorised")
+    }
+
+    const decodedRefresh = jwt.verify(cookieRefreshToken,process.env.REFRESH_TOKEN_SECRET)
+    
+    const User = await user.findById(decodedToken?._id)
+    
+    if (!User){
+        throw new ApiError(402,"You are not authorised")
+    }
+
+    if(cookieRefreshToken !== User?.refreshToken){
+        throw new ApiError(403,"refresh token is used & need to login again")
+    }
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    const {accessToken, newRefreshToken} = await genrateAccessTokenAndRefreshToken(User._id)
+    
+    return res
+    .status(200)
+    .cookie("accesToken",accessToken,options)
+    .cookie("refresToken",newRefreshToken,options)
+    .json(
+        new ApiResponse(
+            200,{
+            User,
+            accessToken,
+            refreshToken:newRefreshToken,
+            },
+            "Access token refreshed"
+        )
+    )
+
+    }
+)
 
 export  {
     registerUser,
     logInUser,
-    logOutUser
+    logOutUser,
+    updateRefreshToken
 }   
        
