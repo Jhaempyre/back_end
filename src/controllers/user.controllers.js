@@ -253,7 +253,9 @@ const updatePassword = asyncHandler(async(req,res)=>{
         throw new ApiError(400,"Enter old and new password")
     }
     // get user id 
-    const User = await user.findById(foundUser._id);
+    //req.founder is used to get it beacuse it's coming from midddleware 
+    const User = await user.findById(req.foundUser?._id);
+ 
     // chek if password is correct
     const validation = await User.isPasswordCorrect(oldPassword)
     // chekckung the validation 
@@ -263,6 +265,13 @@ const updatePassword = asyncHandler(async(req,res)=>{
     //update password to database and get user 
     User.password = newPassword
     await User.save({validateBeforeSave: false})
+
+    return res.status(200)
+    .json( new ApiResponse(
+        200,
+        {},
+        "password changed succesfully"
+    ))
 
 })
 export  {
