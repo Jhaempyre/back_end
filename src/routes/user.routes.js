@@ -3,7 +3,8 @@ import {upload} from "../middlewares/multer.middleware.js"
 import {logInUser,
      logOutUser,
       registerUser,
-     updateRefreshToken} from "../controllers/user.controllers.js";
+     updateRefreshToken,
+     updatePassword} from "../controllers/user.controllers.js";
 import { authVerify } from "../middlewares/auth.middlewares.js";
 
 
@@ -27,7 +28,8 @@ router.route("/login").post(logInUser)
 
 
 
+// routes that require middlewware execution
 router.route("/logout").post(authVerify ,logOutUser)
-router.route("/refresh-token").post(updateRefreshToken)
-
+router.route("/refreshtoken").post(updateRefreshToken)
+router.route("/updatepassword").post(authVerify,updatePassword)
 export default router

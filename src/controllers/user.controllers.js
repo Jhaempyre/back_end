@@ -3,8 +3,9 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import {uploadOnCloudinary} from "../utils/cloudnary.js";
 import {user} from "../models/user.model.js";
-import mongoose from "mongoose";
-import { application } from "express";
+import jwt from "jsonwebtoken";
+//import mongoose from "mongoose";
+//import { application } from "express";
 
 const genrateAccessTokenAndRefreshToken = async (userId) => {
     try {
@@ -17,7 +18,7 @@ const genrateAccessTokenAndRefreshToken = async (userId) => {
         //console.log(refreshToken); // Ensure this prints the refresh token
         User.refreshToken = refreshToken;
         User.save({ validateBeforeSave: false });
-        console.log("avtar")
+        //console.log("avtar")
         
         return { accessToken, refreshToken }; // Check spelling, should be "accessToken"
     } catch (error) {
@@ -187,19 +188,27 @@ const logOutUser = asyncHandler(async(req,res)=>{
 
 //updating refeshtoken so that user don't need to sign in again and again with password 
 //we will update refreshtoken 
+//this is now okay 
+/*problem that came were 
+1)cookies is used not cookie 
+2)i was using another key for that which results into jsonWebTokenError = jwt invalid signature
+*/
 
 const updateRefreshToken = asyncHandler(async(req,res)=>{
-    //get refreshtoken from cookies aur header from bearer token 
-    const cookieRefreshToken = req.cookie.refreshToken || req.body.refreshToken
-
+    //get refreshtoken from cookies aur body
+    //console.log(req.cookies.refreshToken)
+    const cookieRefreshToken = (req.cookies.refreshToken) || (req.body.refreshToken)
+    //console.log(cookieRefreshToken)
     if(!cookieRefreshToken){
         throw new ApiError(400,"You are not Uthorised")
     }
+//i was using another key for that which results into jsonWebTokenError = jwt invalid signature
 
     const decodedRefresh = jwt.verify(cookieRefreshToken,process.env.REFRESH_TOKEN_SECRET)
-    
+    console.log("decodedRefresh");
+    console.log(decodedRefresh)
     const User = await user.findById(decodedRefresh?._id)
-    
+    //console.log(User)
     if (!User){
         throw new ApiError(402,"You are not authorised")
     }
@@ -212,17 +221,21 @@ const updateRefreshToken = asyncHandler(async(req,res)=>{
         secure: true
     }
 
-    const {accessToken, newRefreshToken} = await genrateAccessTokenAndRefreshToken(User._id)
-    
+    const {accessToken : newAccessToken, refreshToken:newRefreshToken} = await genrateAccessTokenAndRefreshToken(User._id)
+   /* console.log("accesstoken")
+    console.log(accessToken);
+    console.log("refreshToken")
+    console.log(refreshToken)*/
+
     return res
     .status(200)
-    .cookie("accessToken",accessToken,options)
+    .cookie("accessToken",newAccessToken,options)
     .cookie("refreshToken",newRefreshToken,options)
     .json(
         new ApiResponse(
             200,{
             User,
-            accessToken,
+            accessToken :newAccessToken,
             refreshToken:newRefreshToken,
             },
             "Access token refreshed"
@@ -234,12 +247,29 @@ const updateRefreshToken = asyncHandler(async(req,res)=>{
 
 const updatePassword = asyncHandler(async(req,res)=>{
     //if user is ok:then get password from rew.body
-    //
+    const {oldPassword, newPassword} = req.body
+    //chek if both password has been paassed , 
+    if(!(oldPassword||newPassword)){
+        throw new ApiError(400,"Enter old and new password")
+    }
+    // get user id 
+    const User = await user.findById(foundUser._id);
+    // chek if password is correct
+    const validation = await User.isPasswordCorrect(oldPassword)
+    // chekckung the validation 
+    if (!validation){
+        throw new ApiError(402,"Enter correct passsword")
+    }
+    //update password to database and get user 
+    User.password = newPassword
+    await User.save({validateBeforeSave: false})
+
 })
 export  {
     registerUser,
     logInUser,
     logOutUser,
-    updateRefreshToken
+    updateRefreshToken,
+    updatePassword
 }   
        
