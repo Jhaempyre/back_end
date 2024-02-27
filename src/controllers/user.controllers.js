@@ -274,11 +274,27 @@ const updatePassword = asyncHandler(async(req,res)=>{
     ))
 
 })
+
+const getCurrentUserDetails = asyncHandler(async(req,res)=>{
+    return res.status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                User : req.foundUser
+            },
+            "User Details fetched succesfully"
+
+        )
+        )
+})
+
 export  {
     registerUser,
     logInUser,
     logOutUser,
     updateRefreshToken,
-    updatePassword
+    updatePassword,
+    getCurrentUserDetails
 }   
        

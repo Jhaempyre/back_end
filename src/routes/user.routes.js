@@ -4,7 +4,8 @@ import {logInUser,
      logOutUser,
       registerUser,
      updateRefreshToken,
-     updatePassword} from "../controllers/user.controllers.js";
+     updatePassword,
+     getCurrentUserDetails} from "../controllers/user.controllers.js";
 import { authVerify } from "../middlewares/auth.middlewares.js";
 
 
@@ -32,4 +33,6 @@ router.route("/login").post(logInUser)
 router.route("/logout").post(authVerify ,logOutUser)
 router.route("/refreshtoken").post(updateRefreshToken)
 router.route("/updatepassword").post(authVerify,updatePassword)
+router.route("/userdetails").post(authVerify,getCurrentUserDetails)
+
 export default router
