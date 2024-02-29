@@ -62,10 +62,10 @@ if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.leng
 console.log(coverlocalpath)
 
 if (!avtarlocalpath){
-    throw new ApiError(400,"dp de ")
+    throw new ApiError(400,"please provide the displaying profile avtar image")
 }
 if (!coverlocalpath){
-    throw new ApiError(400,"cdp de ")
+    throw new ApiError(400,"please provide the cover image for further process ")
 }
 
 const avtar = await uploadOnCloudinary(avtarlocalpath)
@@ -325,6 +325,9 @@ const updateUserDetails = asyncHandler(async(req,res)=>{
         )
 })
 
+const updateAvtarImage = asyncHandler(async(req,res)=>{
+
+})
 export  {
     registerUser,
     logInUser,
@@ -332,6 +335,7 @@ export  {
     updateRefreshToken,
     updatePassword,
     getCurrentUserDetails,
-    updateUserDetails
+    updateUserDetails,
+    updateAvtarImage
 }   
        
