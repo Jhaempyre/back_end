@@ -391,6 +391,30 @@ const updateCoverImage = asyncHandler(async(req,res)=>{
 
     await User.save({validateBeforeSave:false})
 
+    //this could be a approach too :)
+/*  const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                coverImage: coverImage.url
+            }
+        },
+        {new: true}
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, user, "Cover image updated successfully")
+    )
+}) */
+
+
+
+
+
+
+
     return res.status(200)
     .json( new ApiResponse(
         200,
