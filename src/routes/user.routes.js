@@ -7,7 +7,8 @@ import {logInUser,
      updatePassword,
      getCurrentUserDetails,
      updateUserDetails,
-     updateAvtarImage
+     updateAvtarImage,
+     updateCoverImage
     } from "../controllers/user.controllers.js";
 import { authVerify } from "../middlewares/auth.middlewares.js";
 
@@ -39,5 +40,5 @@ router.route("/updatepassword").post(authVerify,updatePassword)
 router.route("/userdetails").post(authVerify,getCurrentUserDetails)
 router.route("/updatedetails").patch(authVerify,updateUserDetails)
 router.route("/updateAvtar").patch(authVerify,upload.single("avtar"),updateAvtarImage)
-
+router.route("/updatecoverimage").patch(authVerify,upload.single("coverImage"),updateCoverImage)
 export default router

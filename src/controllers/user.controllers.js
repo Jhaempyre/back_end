@@ -325,13 +325,15 @@ const updateUserDetails = asyncHandler(async(req,res)=>{
         )
 })
 
+//updating avtarImage
+
 const updateAvtarImage = asyncHandler(async(req, res) => {
     let avtarLocalPath;
-    console.log("Request file:", req.file); // Logging request file for debugging
+    //console.log("Request file:", req.file); // Logging request file for debugging
     if (req.file) {
         avtarLocalPath = req.file.path;
     }
-    console.log("Avtar local path:", avtarLocalPath); // Logging avtarLocalPath for debugging
+    //console.log("Avtar local path:", avtarLocalPath); // Logging avtarLocalPath for debugging
     if (!avtarLocalPath) {
         throw new ApiError(400, "Please provide the displaying profile avatar image");
     }
@@ -360,6 +362,45 @@ const updateAvtarImage = asyncHandler(async(req, res) => {
         ));
 });
 
+//updating coverImage
+
+const updateCoverImage = asyncHandler(async(req,res)=>{
+    let coverLocalPath ;
+
+    if (req.file){
+        coverLocalPath = req.file.path;
+    }
+
+    console.log("coverloacalpath",coverLocalPath)
+
+    if(!coverLocalPath){
+        throw new ApiError(400,"please provoide the coverImage")
+    }
+
+    const coverImage = await uploadOnCloudinary(coverLocalPath)
+
+    if (!coverLocalPath){
+        throw new ApiError(402,"something went wrong . please try again later")
+    }
+
+    const User = await user.findById(req.foundUser?._id)
+
+    const oldCoverImage = User.coverImage
+
+    User.coverImage = coverImage?.url || ""
+
+    await User.save({validateBeforeSave:false})
+
+    return res.status(200)
+    .json( new ApiResponse(
+        200,
+        {
+            User
+        },
+        "coverImage changed succesfully"
+    ))
+
+})
 
 export  {
     registerUser,
@@ -369,6 +410,7 @@ export  {
     updatePassword,
     getCurrentUserDetails,
     updateUserDetails,
-    updateAvtarImage
+    updateAvtarImage,
+    updateCoverImage
 }   
        
