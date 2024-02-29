@@ -325,43 +325,42 @@ const updateUserDetails = asyncHandler(async(req,res)=>{
         )
 })
 
-//updating avtarImage 
-const updateAvtarImage = asyncHandler(async(req,res)=>{
-    let avtarLocalPath ;
-    if (req.files && Array.isArray(req.files.avtar) && (req.files.avtar.length>0)){
-         avtarLocalPath = req.files.avtar[0].path 
+const updateAvtarImage = asyncHandler(async(req, res) => {
+    let avtarLocalPath;
+    console.log("Request file:", req.file); // Logging request file for debugging
+    if (req.file) {
+        avtarLocalPath = req.file.path;
     }
-    console.log(avtarLocalPath)
-    if (!avtarLocalPath){
-        throw new ApiError(400,"please provide the displaying profile avtar image")
-    }
-    
-    const avtarImage = await uploadOnCloudinary(avtarLocalPath)
-    
-    if (!avtarImage){
-        throw new ApiError(400,"something went worng please try again ")
+    console.log("Avtar local path:", avtarLocalPath); // Logging avtarLocalPath for debugging
+    if (!avtarLocalPath) {
+        throw new ApiError(400, "Please provide the displaying profile avatar image");
     }
 
-    const User = await user.findById(req.foundUser?._id)
-    const email = User.email
-    console.log(email)
-    
-    const oldAvtarUrl = User.avtar
-    //will work on deleting from cloudinary just after once upload is done 
-    User.avtar = avtarImage.url || ""
-    await User.save({validateBeforeSave: false})
+    const avtarImage = await uploadOnCloudinary(avtarLocalPath);
+
+    if (!avtarImage) {
+        throw new ApiError(400, "Something went wrong. Please try again");
+    }
+
+    const User = await user.findById(req.foundUser?._id);
+    const email = User.email;
+    console.log("User email:", email); // Logging user email for debugging
+
+    const oldAvtarUrl = User.avtar;
+    // Will work on deleting from cloudinary just after once upload is done 
+    User.avtar = avtarImage.url || "";
+    await User.save({ validateBeforeSave: false });
 
     return res.status(200)
-    .json( new ApiResponse(
-        200,
-        {
-            User
-        },
-        "Avtar changed succesfully"
-    ))
+        .json(new ApiResponse(
+            200, {
+                User
+            },
+            "Avatar changed successfully"
+        ));
+});
 
 
-})
 export  {
     registerUser,
     logInUser,
