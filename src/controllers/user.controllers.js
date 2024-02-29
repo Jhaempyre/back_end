@@ -289,12 +289,49 @@ const getCurrentUserDetails = asyncHandler(async(req,res)=>{
         )
 })
 
+//updating user details 
+
+const updateUserDetails = asyncHandler(async(req,res)=>{
+    //get email and fullname with user , 
+    const {fullname , email} = req.body
+    //chek if they came 
+    if (!fullname || !email) {
+        throw new ApiError(400, "All fields are required")
+    }
+    //talk to database and update them 
+
+    const newUser = await user.findByIdAndUpdate(
+        req.foundUser?._id,
+        {
+            $set :{                 //this set the new data to the document 
+                fullname : fullname ,
+                email : email
+            }
+        },
+        {new: true}
+    ).select("-password")
+    // return new user 
+
+    return res.status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                newUser
+            },
+            " Details updated succesfully"
+
+        )
+        )
+})
+
 export  {
     registerUser,
     logInUser,
     logOutUser,
     updateRefreshToken,
     updatePassword,
-    getCurrentUserDetails
+    getCurrentUserDetails,
+    updateUserDetails
 }   
        
