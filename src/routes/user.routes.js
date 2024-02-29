@@ -6,7 +6,8 @@ import {logInUser,
      updateRefreshToken,
      updatePassword,
      getCurrentUserDetails,
-     updateUserDetails 
+     updateUserDetails,
+     updateAvtarImage
     } from "../controllers/user.controllers.js";
 import { authVerify } from "../middlewares/auth.middlewares.js";
 
@@ -36,6 +37,7 @@ router.route("/logout").post(authVerify ,logOutUser)
 router.route("/refreshtoken").post(updateRefreshToken)
 router.route("/updatepassword").post(authVerify,updatePassword)
 router.route("/userdetails").post(authVerify,getCurrentUserDetails)
-router.route("/updatedetails").post(authVerify,updateUserDetails)
+router.route("/updatedetails").patch(authVerify,updateUserDetails)
+router.route("/updateAvtar").patch(authVerify,upload.single("avtar"),updateAvtarImage)
 
 export default router
